@@ -1,0 +1,112 @@
+/* ==========================================================
+   Library Management System — Custom Styles (lms.css)
+   Built on top of SB Admin 2
+   ========================================================== */
+
+/* ---- Google Font (Nunito already loaded via template) ---- */
+
+/* ---- Global Tweaks ---- */
+body { font-family: 'Nunito', sans-serif; }
+
+.x-small { font-size: 0.72rem; }
+
+/* ---- Welcome Banner (Student) ---- */
+.lms-welcome-banner {
+    background: linear-gradient(135deg, #1cc88a 0%, #17a673 50%, #169b64 100%);
+    color: #fff;
+    border: none;
+    border-radius: 0.5rem;
+}
+
+/* ---- Book Cards ---- */
+.book-card {
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    border: none;
+}
+.book-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 0.5rem 1.5rem rgba(0,0,0,0.15) !important;
+}
+
+/* ---- Sidebar brand icon ---- */
+.sidebar-brand-icon i {
+    font-size: 1.6rem;
+}
+
+/* ---- Cards: elevation on hover ---- */
+.card.shadow:hover {
+    box-shadow: 0 0.4rem 1.2rem rgba(0,0,0,0.13) !important;
+    transition: box-shadow 0.2s;
+}
+
+/* ---- Pulse border for urgent cards ---- */
+@keyframes pulseBorder {
+    0%   { border-color: rgba(220,53,69,0.3); }
+    50%  { border-color: rgba(220,53,69,1); }
+    100% { border-color: rgba(220,53,69,0.3); }
+}
+.lms-pulse-border {
+    border: 2px solid rgba(220,53,69,0.8) !important;
+    animation: pulseBorder 1.5s infinite;
+}
+
+/* ---- DataTables tweaks ---- */
+.dataTables_wrapper .dataTables_length,
+.dataTables_wrapper .dataTables_filter { margin-bottom: 0.5rem; }
+
+/* ---- Badges ---- */
+.badge { font-size: 0.75rem; padding: 0.3em 0.55em; }
+
+/* ---- Print styles ---- */
+@media print {
+    .sidebar, .topbar, .sticky-footer, .scroll-to-top,
+    .d-print-none, #sidebarToggle, #sidebarToggleTop { display: none !important; }
+    #content-wrapper { margin-left: 0 !important; }
+    .card { border: 1px solid #ddd !important; box-shadow: none !important; }
+    .card-header { background: #f8f9fc !important; color: #000 !important; }
+}
+
+/* ---- Login / Register page extras ---- */
+.bg-login-image {
+    background: url('../startbootstrap-sb-admin-2-gh-pages/img/undraw_posting_photo.svg') center/cover no-repeat;
+}
+
+/* ---- Alert animations ---- */
+.alert { animation: slideDown 0.3s ease; }
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ---- Table row hover color ---- */
+.table-hover tbody tr:hover { background-color: rgba(78, 115, 223, 0.05); }
+
+/* ---- Catalogue grid responsiveness ---- */
+#catalogueGrid .card { cursor: default; }
+
+/* ---- Status badge colors ---- */
+.badge-overdue { background-color: #dc3545; color: #fff; }
+
+/* ---- Scrollbar style ---- */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #f1f1f1; }
+::-webkit-scrollbar-thumb { background: #4e73df; border-radius: 3px; }
+
+/* ---- Topbar search ---- */
+.navbar-search .input-group {
+    border-radius: 2rem;
+    overflow: hidden;
+}
+.navbar-search input.form-control {
+    border-radius: 2rem 0 0 2rem !important;
+}
+.navbar-search button {
+    border-radius: 0 2rem 2rem 0 !important;
+}
+
+/* ---- Mobile card spacing ---- */
+@media (max-width: 576px) {
+    .container-fluid { padding: 0.75rem; }
+}
