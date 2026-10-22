@@ -107,7 +107,7 @@ include '../includes/sidebar_admin.php';
             <div class="table-responsive">
                 <table class="table table-bordered table-hover" id="resTable">
                     <thead class="thead-dark">
-                        <tr><th>Student</th><th>Book</th><th>Reserved On</th><th>Expiry</th><th>Status</th><th>Actions</th></tr>
+                        <tr><th>Student</th><th>Book</th><th>Reserved On</th><th>Expiry</th><th>Status</th><th>Notes</th><th>Actions</th></tr>
                     </thead>
                     <tbody>
                     <?php foreach ($reservations as $r): ?>
@@ -127,6 +127,13 @@ include '../includes/sidebar_admin.php';
                         <td>
                             <?php $sc = ['pending'=>'warning','approved'=>'success','cancelled'=>'secondary','expired'=>'danger','converted'=>'info']; ?>
                             <span class="badge badge-<?= $sc[$r['status']] ?>"><?= ucfirst($r['status']) ?></span>
+                        </td>
+                        <td>
+                            <?php if (!empty(trim((string)$r['notes']))): ?>
+                                <div class="text-muted small"><?= nl2br(htmlspecialchars($r['notes'])) ?></div>
+                            <?php else: ?>
+                                <span class="text-muted small">—</span>
+                            <?php endif; ?>
                         </td>
                         <td>
                             <?php if ($r['status'] === 'pending'): ?>
@@ -154,7 +161,7 @@ include '../includes/sidebar_admin.php';
                     </tr>
                     <?php endforeach; ?>
                     <?php if (empty($reservations)): ?>
-                        <tr><td colspan="6" class="text-center text-muted py-3">No reservations.</td></tr>
+                        <tr><td colspan="7" class="text-center text-muted py-3">No reservations.</td></tr>
                     <?php endif; ?>
                     </tbody>
                 </table>

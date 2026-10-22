@@ -56,6 +56,82 @@ $stats = $pdo->query("SELECT
     COUNT(CASE WHEN status='unpaid' THEN 1 END) AS count_unpaid
     FROM penalties")->fetch();
 
+if (isset($_GET['export'])) {
+    $lib_name = get_setting($pdo, 'library_name', 'Library');
+    ?><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Penalty Records — <?= htmlspecialchars($lib_name) ?></title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: Arial, sans-serif; font-size: 12px; color: #000; padding: 20px; }
+        h1 { font-size: 18px; margin-bottom: 4px; }
+        .meta { color: #555; margin-bottom: 14px; font-size: 11px; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid #999; padding: 5px 8px; text-align: left; vertical-align: top; }
+        th { background: #1c3a5e; color: #fff; font-size: 11px; }
+        tr:nth-child(even) td { background: #f4f4f4; }
+        .status { font-weight: bold; }
+        .footer { margin-top: 14px; font-size: 10px; color: #777; }
+        @media print { body { padding: 0; } .no-print { display: none !important; } }
+    </style>
+</head>
+<body>
+    <div class="no-print" style="margin-bottom:16px;">
+        <button onclick="window.print()" style="padding:8px 20px;background:#1c3a5e;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:13px;">
+            🖨️ Print / Save as PDF
+        </button>
+        <a href="penalties.php" style="margin-left:12px;font-size:12px;">← Back to Penalties</a>
+    </div>
+
+    <h1>⚠️ Penalty Records — <?= htmlspecialchars($lib_name) ?></h1>
+    <p class="meta">
+        Generated: <?= date('F d, Y h:i A') ?>
+        <?php if ($search): ?> &nbsp;|&nbsp; Search: <strong><?= htmlspecialchars($search) ?></strong><?php endif; ?>
+        <?php if ($filter): ?> &nbsp;|&nbsp; Status: <strong><?= htmlspecialchars(ucfirst($filter)) ?></strong><?php endif; ?>
+        &nbsp;|&nbsp; Total: <strong><?= count($penalties) ?></strong> record(s)
+    </p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Student</th>
+                <th>Book</th>
+                <th>Overdue Days</th>
+                <th>Overdue Fee</th>
+                <th>Damage Fee</th>
+                <th>Total</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+        <?php if (empty($penalties)): ?>
+            <tr><td colspan="7" style="text-align:center;color:#888;padding:16px;">No penalty records found.</td></tr>
+        <?php else: ?>
+            <?php foreach ($penalties as $p): ?>
+            <tr>
+                <td><?= htmlspecialchars($p['last_name'] . ', ' . $p['first_name']) ?><br><small><?= htmlspecialchars($p['student_id']) ?></small></td>
+                <td><?= htmlspecialchars($p['book_title']) ?><br><small>Due: <?= date('M d, Y', strtotime($p['due_date'])) ?></small></td>
+                <td><?= $p['overdue_days'] ?> days</td>
+                <td>₱<?= number_format($p['overdue_days'] * $p['daily_rate'], 2) ?></td>
+                <td>₱<?= number_format($p['damage_fee'], 2) ?></td>
+                <td><strong>₱<?= number_format($p['total_amount'], 2) ?></strong></td>
+                <td class="status"><?= ucfirst($p['status']) ?></td>
+            </tr>
+            <?php endforeach; ?>
+        <?php endif; ?>
+        </tbody>
+    </table>
+
+    <p class="footer">— End of Penalty Records —</p>
+    <script>window.onload = function(){ window.print(); }</script>
+</body>
+</html>
+<?php
+    exit;
+}
+
 $flash = get_flash();
 include '../includes/header.php';
 include '../includes/sidebar_admin.php';
@@ -70,6 +146,9 @@ include '../includes/sidebar_admin.php';
 
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800"><i class="fas fa-exclamation-triangle mr-2 text-warning"></i>Penalties</h1>
+        <a href="?<?= http_build_query(array_merge($_GET, ['export' => '1'])) ?>" class="btn btn-success shadow-sm">
+            <i class="fas fa-print mr-1"></i>Print / PDF
+        </a>
     </div>
 
     <!-- Stats -->

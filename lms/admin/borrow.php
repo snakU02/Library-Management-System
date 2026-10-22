@@ -160,7 +160,7 @@ include '../includes/sidebar_admin.php';
             <div class="table-responsive">
                 <table class="table table-bordered table-hover" id="borrowTable">
                     <thead class="thead-dark"><tr>
-                        <th>Student</th><th>Book</th><th>Issued</th><th>Due Date</th><th>Status</th>
+                        <th>Student</th><th>Book</th><th>Issued</th><th>Due Date</th><th>Status</th><th>Notes</th>
                     </tr></thead>
                     <tbody>
                     <?php foreach ($active_borrows as $b): ?>
@@ -187,10 +187,17 @@ include '../includes/sidebar_admin.php';
                                 <?= ucfirst($b['status']) ?>
                             </span>
                         </td>
+                        <td>
+                            <?php if (!empty(trim((string)$b['notes']))): ?>
+                                <div class="text-muted small"><?= nl2br(htmlspecialchars($b['notes'])) ?></div>
+                            <?php else: ?>
+                                <span class="text-muted small">—</span>
+                            <?php endif; ?>
+                        </td>
                     </tr>
                     <?php endforeach; ?>
                     <?php if (empty($active_borrows)): ?>
-                        <tr><td colspan="5" class="text-center text-muted py-3">No active borrows.</td></tr>
+                        <tr><td colspan="6" class="text-center text-muted py-3">No active borrows.</td></tr>
                     <?php endif; ?>
                     </tbody>
                 </table>

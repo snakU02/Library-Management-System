@@ -88,6 +88,83 @@ $stmt = $pdo->prepare($sql);
 $stmt->execute($params);
 $students = $stmt->fetchAll();
 
+if (isset($_GET['export'])) {
+    $lib_name = get_setting($pdo, 'library_name', 'Library');
+    ?><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Student Records — <?= htmlspecialchars($lib_name) ?></title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: Arial, sans-serif; font-size: 12px; color: #000; padding: 20px; }
+        h1 { font-size: 18px; margin-bottom: 4px; }
+        .meta { color: #555; margin-bottom: 14px; font-size: 11px; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid #999; padding: 5px 8px; text-align: left; vertical-align: top; }
+        th { background: #1c3a5e; color: #fff; font-size: 11px; }
+        tr:nth-child(even) td { background: #f4f4f4; }
+        .footer { margin-top: 14px; font-size: 10px; color: #777; }
+        @media print { body { padding: 0; } .no-print { display: none !important; } }
+    </style>
+</head>
+<body>
+    <div class="no-print" style="margin-bottom:16px;">
+        <button onclick="window.print()" style="padding:8px 20px;background:#1c3a5e;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:13px;">
+            🖨️ Print / Save as PDF
+        </button>
+        <a href="students.php" style="margin-left:12px;font-size:12px;">← Back to Students</a>
+    </div>
+
+    <h1>👥 Student Records — <?= htmlspecialchars($lib_name) ?></h1>
+    <p class="meta">
+        Generated: <?= date('F d, Y h:i A') ?>
+        <?php if ($search): ?> &nbsp;|&nbsp; Search: <strong><?= htmlspecialchars($search) ?></strong><?php endif; ?>
+        <?php if ($filter): ?> &nbsp;|&nbsp; Filter: <strong><?= htmlspecialchars(ucfirst($filter)) ?></strong><?php endif; ?>
+        &nbsp;|&nbsp; Total: <strong><?= count($students) ?></strong> student(s)
+    </p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Student ID</th>
+                <th>Name</th>
+                <th>Course/Year</th>
+                <th>Email</th>
+                <th>Contact</th>
+                <th>Borrows</th>
+                <th>Penalty</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+        <?php if (empty($students)): ?>
+            <tr><td colspan="8" style="text-align:center;color:#888;padding:16px;">No students found.</td></tr>
+        <?php else: ?>
+            <?php foreach ($students as $s): ?>
+            <tr>
+                <td><?= htmlspecialchars($s['student_id']) ?></td>
+                <td><?= htmlspecialchars($s['last_name'] . ', ' . $s['first_name']) ?></td>
+                <td><?= htmlspecialchars($s['course'] ?? '') ?> <?= $s['year_level'] ? '- Yr. '.$s['year_level'] : '' ?></td>
+                <td><?= htmlspecialchars($s['email']) ?></td>
+                <td><?= htmlspecialchars($s['contact'] ?? '') ?></td>
+                <td><?= (int)$s['active_borrows'] ?></td>
+                <td>₱<?= number_format((float)($s['unpaid_penalties'] ?? 0), 2) ?></td>
+                <td><?= ucfirst($s['status']) ?></td>
+            </tr>
+            <?php endforeach; ?>
+        <?php endif; ?>
+        </tbody>
+    </table>
+
+    <p class="footer">— End of Student Records —</p>
+    <script>window.onload = function(){ window.print(); }</script>
+</body>
+</html>
+<?php
+    exit;
+}
+
 $flash = get_flash();
 include '../includes/header.php';
 include '../includes/sidebar_admin.php';
@@ -103,9 +180,14 @@ include '../includes/sidebar_admin.php';
 
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800"><i class="fas fa-users mr-2 text-primary"></i>Manage Students</h1>
-        <button class="btn btn-primary shadow-sm" data-toggle="modal" data-target="#addStudentModal">
-            <i class="fas fa-user-plus mr-2"></i>Add Student
-        </button>
+        <div>
+            <a href="?<?= http_build_query(array_merge($_GET, ['export' => '1'])) ?>" class="btn btn-success shadow-sm mr-2">
+                <i class="fas fa-print mr-1"></i>Print / PDF
+            </a>
+            <button class="btn btn-primary shadow-sm" data-toggle="modal" data-target="#addStudentModal">
+                <i class="fas fa-user-plus mr-2"></i>Add Student
+            </button>
+        </div>
     </div>
 
     <!-- Filter -->
